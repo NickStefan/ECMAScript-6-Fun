@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+<form id="addTodoForm">
+<input id="addTodo" />
+</form>
+<input id="input" />
+<div id="inputOutput"></div>
+<ul id="todos"></ul>
+<script type="text/javascript">
+// model
+var collection = localStorage.getItem('todos') ? JSON.parse(localStorage.getItem('todos')) : [];
+var addTodo = document.getElementById('addTodo');
+var addTodoForm = document.getElementById('addTodoForm');
+var todos = document.getElementById('todos');
+updateTodo();
+
+// controller
+addTodoForm.addEventListener('submit',function(e){
+  e.preventDefault();
+  collection.push(addTodo.value);
+  addTodo.value = "";
+});
+
+// view
+Object.observe(collection,updateTodo);
+
+function updateTodo(changes){
+  todos.innerHTML = "";
+  console.log(changes);
+  collection.forEach(function(item,index){
+    var todo = document.createElement('li');
+    todo.innerHTML = item;
+    todos.appendChild(todo)
+
+    todos.childNodes[todos.childNodes.length - 1].addEventListener('click',function(e){
+      collection.splice(index,1);
+    });
+  });
+  localStorage.setItem('todos',JSON.stringify(collection));
+};
+
+// model
+var outputHolder = {};
+
+// controller
+document.getElementById('input').addEventListener('keyup',function(){
+  outputHolder.prop = document.getElementById('input').value
+});
+
+// view
+Object.observe(outputHolder,function(changes){
+  document.getElementById('inputOutput').innerHTML = "";
+  document.getElementById('inputOutput').innerHTML = document.getElementById('input').value;
+});
+
+
+// Promises
+var syncTimeout = new Promise(function(resolve,reject){
+  setTimeout(function(){
+    resolve("bob") 
+  },2000);
+});
+syncTimeout.then(function(data){alert(data)});
+
+</script>
+</body>
+</html>
